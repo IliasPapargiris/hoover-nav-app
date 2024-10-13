@@ -1,8 +1,8 @@
 package com.rationaldata.robotic_hoover.validation;
 
-import com.rationaldata.robotic_hoover.dto.Coords;
 import com.rationaldata.robotic_hoover.dto.HooverRequest;
 import com.rationaldata.robotic_hoover.exception.InvalidRoomSizeException;
+import com.rationaldata.robotic_hoover.exception.NegativeValuesException;
 import com.rationaldata.robotic_hoover.exception.OutOfRoomBoundsCoordinatesException;
 import org.springframework.stereotype.Component;
 
@@ -14,41 +14,77 @@ import org.springframework.stereotype.Component;
 public class HooverRequestValidator {
 
     public void validateHooverRequest(HooverRequest request) {
-        int roomWidth = request.getRoomSize().getX();
-        int roomHeight = request.getRoomSize().getY();
+        int roomWidth = request.getRoomSize()[0];
+        int roomHeight = request.getRoomSize()[1];
 
-        if (!hasValidRoomSize(roomWidth, roomHeight)) {
-            throw new InvalidRoomSizeException("Both room width and height cannot be zero.");
+        if(!hasValidNonNegativeCoordinates(request)){
+            throw new NegativeValuesException("Coordinates values regarding room size, patches and initial position can not be negative.");
         }
 
-        if (!areValidCoordinates(request, roomWidth, roomHeight)) {
+        if (!hasValidRoomSize(roomWidth, roomHeight)) {
+            throw new InvalidRoomSizeException("Both room width and height must be greater than zero.");
+        }
+
+        if (!areCoordinatesWithinRoomBounds(request, roomWidth, roomHeight)) {
             throw new OutOfRoomBoundsCoordinatesException("Initial coordinates or patch coordinates are out of bounds of the room size.");
         }
     }
-
 
     private boolean hasValidRoomSize(int roomWidth, int roomHeight) {
         return roomWidth > 0 && roomHeight > 0;
     }
 
+
     /**
-     * Validates the coordinates (initial position and patches) based on the room size.
+     * Checks if the request contains any negative coordinates in roomSize, initialPosition, or patches.
      *
-     * @param request The HooverRequest containing the coordinates.
-     * @param roomWidth  The width of the room.
-     * @param roomHeight The height of the room.
-     * @return true if all coordinates are within the room bounds, false otherwise.
+     * @param request The HooverRequest containing room size, initial position, and patches.
+     * @return true if all values are non-negative, false if any negative values are found.
      */
-    private boolean areValidCoordinates(HooverRequest request, int roomWidth, int roomHeight) {
-        Coords initialPosition = request.getInitialPosition();
+    private boolean hasValidNonNegativeCoordinates(HooverRequest request) {
+        int[] roomSize = request.getRoomSize();
+        int[] initialPosition = request.getCoords();
 
-
-        if (initialPosition.getX() > roomWidth || initialPosition.getY() > roomHeight) {
+        // Check for negative values in room size
+        if (roomSize[0] < 0 || roomSize[1] < 0) {
             return false;
         }
 
-        for (Coords patch : request.getPatches()) {
-            if (patch.getX() > roomWidth || patch.getY() > roomHeight) {
+        // Check for negative values in initial position
+        if (initialPosition[0] < 0 || initialPosition[1] < 0) {
+            return false;
+        }
+
+        // Check for negative values in patches
+        for (int[] patch : request.getPatches()) {
+            if (patch[0] < 0 || patch[1] < 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates the coordinates (initial position and patches) to ensure they are
+     * within the room size bounds.
+     * @param request The HooverRequest containing the coordinates.
+     * @param roomWidth The width of the room.
+     * @param roomHeight The height of the room.
+     * @return true if all coordinates are non-negative and within the room bounds, false otherwise.
+     */
+    private boolean areCoordinatesWithinRoomBounds(HooverRequest request, int roomWidth, int roomHeight) {
+
+        int[] initialPosition = request.getCoords();
+
+        // Check if initial position is within room bounds
+        if (initialPosition[0] > roomWidth || initialPosition[1] > roomHeight) {
+            return false;
+        }
+
+        // Check if each patch is within room bounds
+        for (int[] patch : request.getPatches()) {
+            if (patch[0] > roomWidth || patch[1] > roomHeight) {
                 return false;
             }
         }

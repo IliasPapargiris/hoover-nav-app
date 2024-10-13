@@ -1,13 +1,11 @@
 package com.rationaldata.robotic_hoover.validation;
 
-import com.rationaldata.robotic_hoover.dto.Coords;
 import com.rationaldata.robotic_hoover.dto.HooverRequest;
 import com.rationaldata.robotic_hoover.exception.InvalidRoomSizeException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,27 +19,25 @@ class HooverRequestValidatorTest {
     void testInvalidRoomSize() {
         // Given
         HooverRequest request = new HooverRequest();
-        request.setRoomSize(new Coords(0, 0));  // Invalid room size
-        request.setInitialPosition(new Coords(1, 1));
+        request.setRoomSize(new int[]{0, 0});  // Invalid room size
+        request.setCoords(new int[]{1, 1});
 
-        Set<Coords> patches = new HashSet<>();
-        patches.add(new Coords(1, 0));
+        List<int[]> patches = List.of(new int[]{1, 0});
         request.setPatches(patches);
 
         // When & Then
         Exception exception = assertThrows(InvalidRoomSizeException.class, () -> validator.validateHooverRequest(request));
-        assertEquals("Both room width and height cannot be zero.", exception.getMessage());
+        assertEquals("Both room width and height must be greater than zero.", exception.getMessage());
     }
 
     @Test
     void testInvalidInitialPositionOutOfBounds() {
         // Given
         HooverRequest request = new HooverRequest();
-        request.setRoomSize(new Coords(5, 5));
-        request.setInitialPosition(new Coords(6, 6));
+        request.setRoomSize(new int[]{5, 5});
+        request.setCoords(new int[]{6, 6});  // Initial position out of bounds
 
-        Set<Coords> patches = new HashSet<>();
-        patches.add(new Coords(1, 1));
+        List<int[]> patches = List.of(new int[]{1, 1});
         request.setPatches(patches);
 
         // When & Then
@@ -52,11 +48,10 @@ class HooverRequestValidatorTest {
     void testInvalidPatchPositionOutOfBounds() {
         // Given
         HooverRequest request = new HooverRequest();
-        request.setRoomSize(new Coords(5, 5));
-        request.setInitialPosition(new Coords(2, 2));
+        request.setRoomSize(new int[]{5, 5});
+        request.setCoords(new int[]{2, 2});
 
-        Set<Coords> patches = new HashSet<>();
-        patches.add(new Coords(6, 6));
+        List<int[]> patches = List.of(new int[]{6, 6});  // Patch out of bounds
         request.setPatches(patches);
 
         // When & Then
@@ -67,11 +62,10 @@ class HooverRequestValidatorTest {
     void testValidRoomSizeButOutOfBoundsInitialCoords() {
         // Given
         HooverRequest request = new HooverRequest();
-        request.setRoomSize(new Coords(5, 5));
-        request.setInitialPosition(new Coords(10, 10));
+        request.setRoomSize(new int[]{5, 5});
+        request.setCoords(new int[]{10, 10});  // Initial coordinates out of bounds
 
-        Set<Coords> patches = new HashSet<>();
-        patches.add(new Coords(1, 1));
+        List<int[]> patches = List.of(new int[]{1, 1});
         request.setPatches(patches);
 
         // When & Then

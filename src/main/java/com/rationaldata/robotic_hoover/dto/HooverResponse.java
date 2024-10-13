@@ -1,7 +1,9 @@
 package com.rationaldata.robotic_hoover.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import jakarta.validation.constraints.NotNull;
 
 @Data
@@ -10,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 public class HooverResponse {
 
     @NotNull(message = "Final coordinates cannot be null")
-    private Coords coords;
+    private int[] coords; // array [x, y]
 
     @NotNull(message = "Number of cleaned patches cannot be null")
     private Integer patches;

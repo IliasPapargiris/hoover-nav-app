@@ -5,16 +5,16 @@ public class JsonExamples {
     // Example of Hoover Request JSON
     public static final String HOOVER_REQUEST_JSON = """
             {
-              "roomSize": {"x": 5, "y": 5},
-              "initialPosition": {"x": 1, "y": 2},
-              "patches": [{"x": 1, "y": 0}, {"x": 2, "y": 2}],
+              "roomSize": [5, 5],
+              "coords": [1, 2],
+              "patches": [[1, 0], [2, 2]],
               "instructions": "NNESEESWNWW"
             }""";
 
     // Example of Hoover Response JSON
     public static final String HOOVER_RESPONSE_JSON = """
             {
-              "coords": {"x": 1, "y": 3},
+              "coords": [1, 3],
               "patches": 2
             }""";
 

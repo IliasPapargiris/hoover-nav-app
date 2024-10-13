@@ -57,4 +57,10 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = createErrorResponse("Out of Room Bounds", ex.getMessage(), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NegativeValuesException.class)
+    public ResponseEntity<ErrorResponse> handleNegativeValuesException(NegativeValuesException ex, WebRequest request) {
+        ErrorResponse errorResponse = createErrorResponse("Negative Values Error", ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
