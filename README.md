@@ -53,10 +53,14 @@ java -jar target/robotic-hoover-0.0.1-SNAPSHOT.jar
 ### Request Payload Example
 ```json
 {
-  "roomSize": {"x": 5, "y": 5},
-  "initialPosition": {"x": 1, "y": 2},
-  "patches": [{"x": 1, "y": 0}, {"x": 2, "y": 2}, {"x": 2, "y": 3}],
-  "instructions": "NNESEESWNWW"
+"roomSize":[5,5],
+"coords":[1,2],
+"patches":[
+[1, 0],
+[2, 2],
+[2, 3]
+],
+"instructions": "NNESEESWNWW"
 }
 ```
 
