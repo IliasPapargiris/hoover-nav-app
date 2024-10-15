@@ -6,6 +6,8 @@ import com.rationaldata.robotic_hoover.exception.NegativeValuesException;
 import com.rationaldata.robotic_hoover.exception.OutOfRoomBoundsCoordinatesException;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * This class is responsible for validating the {@link HooverRequest} before processing.
  * It ensures that the room size, initial position, and dirt patches are valid and within bounds.
@@ -27,6 +29,10 @@ public class HooverRequestValidator {
 
         if (!areCoordinatesWithinRoomBounds(request, roomWidth, roomHeight)) {
             throw new OutOfRoomBoundsCoordinatesException("Initial coordinates or patch coordinates are out of bounds of the room size.");
+        }
+
+        if(!patchesHavingValidSize(request.getPatches())){
+            throw new IllegalArgumentException("Invalid patch ,only exactly 2 integers must be contained in a patch array");
         }
     }
 
@@ -91,4 +97,20 @@ public class HooverRequestValidator {
 
         return true;
     }
+
+    /**
+     * Validates that each patch in the list has exactly 2 elements representing x and y coordinates.
+     *
+     * @param patches The list of patches to validate.
+     * @return true if all patches are valid (i.e., each has exactly 2 elements), false otherwise.
+     */
+    private boolean patchesHavingValidSize(List<int[]> patches) {
+        for (int[] patch : patches) {
+            if (patch.length != 2) {
+                return false; // Patch does not have exactly 2 elements (x, y)
+            }
+        }
+        return true;
+    }
+
 }
