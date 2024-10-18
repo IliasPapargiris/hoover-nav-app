@@ -106,7 +106,7 @@ public class HooverRequestValidator {
      */
     private boolean patchesHavingValidSize(List<int[]> patches) {
         for (int[] patch : patches) {
-            if (patch.length != 2) {
+            if (patch==null && patch.length != 2) {
                 return false; // Patch does not have exactly 2 elements (x, y)
             }
         }
